@@ -1,6 +1,7 @@
 import bpy
 from . import utilities_uv
-
+from . import settings
+from .settings import tt_settings
 
 
 class op(bpy.types.Operator):
@@ -24,6 +25,9 @@ class op(bpy.types.Operator):
 		premode = bpy.context.active_object.mode
 		utilities_uv.multi_object_loop(removeuvs, self, context)
 		bpy.ops.object.mode_set(mode=premode)
+		index = len(bpy.context.object.data.uv_layers)-1
+		if index >= 0:
+			bpy.context.scene.texToolsSettings.uv_channel = str(index)
 		return {'FINISHED'}
 
 
@@ -37,5 +41,5 @@ def removeuvs(self, context):
 	index = len(bpy.context.object.data.uv_layers)-1
 	if index >= 0:
 		bpy.context.object.data.uv_layers.active_index = index
-		bpy.context.scene.texToolsSettings.uv_channel = str(index)
-		bpy.context.active_object.data.uv_layers[0].active_render = True
+#		bpy.context.scene.texToolsSettings.uv_channel = str(index)
+		#bpy.context.active_object.data.uv_layers[0].active_render = True

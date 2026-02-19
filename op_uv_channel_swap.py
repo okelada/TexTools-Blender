@@ -11,6 +11,7 @@ class op(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	is_down : bpy.props.BoolProperty(default=False, options={'HIDDEN'})
+	new_active_index = 0
 
 	@classmethod
 	def poll(cls, context):
@@ -25,6 +26,9 @@ class op(bpy.types.Operator):
 		premode = bpy.context.active_object.mode
 		utilities_uv.multi_object_loop(swapuvs, self, context)
 		bpy.ops.object.mode_set(mode=premode)
+
+		bpy.context.scene.texToolsSettings.uv_channel = str(self.new_active_index)
+
 		return {'FINISHED'}
 
 
@@ -60,10 +64,12 @@ def swapuvs(self, context):
 		# Move up
 		for n in [uv_layers[i].name for i in range(index_B, count) if i != index_A]:
 			move_bottom(n)
-		bpy.context.scene.texToolsSettings.uv_channel = str(index_B)
+		
 
 	elif self.is_down:
 		# Move down
 		for n in [uv_layers[i].name for i in range(index_A, count) if i != index_B]:
 			move_bottom(n)
-		bpy.context.scene.texToolsSettings.uv_channel = str(index_B)
+			
+	self.new_active_index = index_B
+		

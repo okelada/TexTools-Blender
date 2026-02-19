@@ -1,6 +1,7 @@
 import bpy
 import re
 
+
 bversion_string = bpy.app.version_string
 bversion_reg = re.match("^(\d\.\d?\d)", bversion_string)
 bversion = float(bversion_reg.group(0))
@@ -26,7 +27,8 @@ use_progressive_refine = False
 use_denoising = False
 bake_objects_hide_render = []
 sets = []
-
+sets_update_needed = True
+bakemode_update_needed = True
 
 def tt_settings():
 	return bpy.context.scene.texToolsSettings

@@ -24,21 +24,24 @@ class op(bpy.types.Operator):
 		premode = bpy.context.active_object.mode
 		utilities_uv.multi_object_loop(adduvs, self, context)
 		bpy.ops.object.mode_set(mode=premode)
+		index = len(bpy.context.object.data.uv_layers)-1
+		if index >= 0:
+			bpy.context.scene.texToolsSettings.uv_channel = str(index)
+	
 		return {'FINISHED'}
 
 
 
 def adduvs(self, context):
 	if len( bpy.context.object.data.uv_layers ) == 0:
-		bpy.context.active_object.data.uv_layers.new(name="UVMap")
+		bpy.context.active_object.data.uv_layers.new(name="UVMapTT")
 	else:
 		# Add new UV channel based on last
 		#bpy.ops.mesh.uv_texture_add()
-		name = "UVMap" + str(len(bpy.context.active_object.data.uv_layers)+1)
+		name = "UVMapTT" + str(len(bpy.context.active_object.data.uv_layers)+1)
 		bpy.context.active_object.data.uv_layers.new(name=name)
 
 	# Get current index
 	index = len(bpy.context.object.data.uv_layers)-1
 	bpy.context.object.data.uv_layers.active_index = index
-	bpy.context.scene.texToolsSettings.uv_channel = str(index)
-	bpy.context.active_object.data.uv_layers[0].active_render = True
+	#bpy.context.active_object.data.uv_layers[0].active_render = True

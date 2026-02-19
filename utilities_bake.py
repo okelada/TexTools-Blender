@@ -57,14 +57,20 @@ class BakeMode:
 		self.invert = invert
 		self.relink = relink
 
-
+def get_texture_prefix(s):
+	if tt_settings().bake_force == "Single":
+		name_texture = tt_settings().single_prefix 
+	else:
+		name_texture = f"bake_{settings.sets[s].name}"
+	return name_texture
+	
 
 def on_select_bake_mode(mode):
-	print(f"Mode changed {mode}")
+	#print(f"Mode changed {mode}")
 
 	if len(settings.sets) > 0:
-		name_texture = f"{settings.sets[0].name}_{mode}"
-
+		#name_texture = f"{settings.sets[0].name}_{mode}"
+		name_texture = f"{get_texture_prefix(0)}_{mode}"
 		if name_texture in bpy.data.images:
 			image = bpy.data.images[name_texture]
 
@@ -249,10 +255,11 @@ def get_object_type(obj):
 
 def get_baked_images(sets):
 	images = []
-	for bset in sets:
-		name_texture = f'{bset.name}_'
+	for s,bset in enumerate(sets):
+		name_texture = f"{get_texture_prefix(s)}_"
+		#name_texture = f'{bset.name}_'
 		for image in bpy.data.images:
-			if name_texture in image.name:
+			if name_texture in image.name and image.size[0] == tt_settings().size[0] and image.size[1] == tt_settings().size[1] and image not in images :
 				images.append(image)
 
 	return images
@@ -567,3 +574,40 @@ def get_image_material(image):
 			material.node_tree.links.new(node_image.outputs[0], bsdf_node.inputs[0])
 
 		return material
+
+
+def setup_vertex_color_id_material_direct(obj, previous_materials):
+	"""
+	Operator-free version of setup_vertex_color_id_material that works in headless/automated contexts.
+	Paints vertex colors directly based on material assignments without requiring View3D operators.
+	"""
+	# Ensure we're in object mode
+	if bpy.context.object and bpy.context.object.mode != 'OBJECT':
+		try:
+			bpy.ops.object.mode_set(mode='OBJECT')
+		except:
+			pass  # In case even this fails in some contexts
+	
+	# Get or create vertex color layer
+	if 'TexTools_temp' not in obj.data.vertex_colors:
+		vc_layer = obj.data.vertex_colors.new(name='TexTools_temp')
+	else:
+		vc_layer = obj.data.vertex_colors['TexTools_temp']
+	
+	vc_layer.active = True
+	vc_layer.active_render = True
+	
+	# Paint colors based on material index
+	for poly in obj.data.polygons:
+		mat_index = poly.material_index
+		if mat_index < len(previous_materials[obj]):
+			mtlname = previous_materials[obj][mat_index]
+			if mtlname and mtlname in bpy.data.materials:
+				mtl = bpy.data.materials[mtlname]
+				if mtl in allMaterials:
+					color = utilities_color.get_color_id(allMaterials.index(mtl), 256, jitter=True)
+					# Paint all loops of this face
+					for loop_idx in poly.loop_indices:
+						vc_layer.data[loop_idx].color = (*color, 1.0)
+	
+	obj.data.update()

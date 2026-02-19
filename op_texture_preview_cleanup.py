@@ -17,7 +17,10 @@ class op(bpy.types.Operator):
 
 
 	def execute(self, context):
-		premode = bpy.context.active_object.mode
+		if(bpy.context.active_object is not None):
+			premode = bpy.context.active_object.mode
+		else:
+			premode = ''
 
 		if self.bool_all:
 			group = {ob for ob in bpy.data.objects if ob.type == 'MESH'}
@@ -41,6 +44,6 @@ class op(bpy.types.Operator):
 			if material and 'TT_material_override' in material.name:
 				if not material.users:
 					bpy.data.materials.remove(material, do_unlink=True)
-
-		bpy.ops.object.mode_set(mode=premode)
+		if(premode != ''):
+			bpy.ops.object.mode_set(mode=premode)
 		return {'FINISHED'}

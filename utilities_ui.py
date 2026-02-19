@@ -44,6 +44,8 @@ preview_icons = previews.new(max_size=(32, 32))
 thumbnail_previews: 'previews.ImagePreviewCollection | None' = None
 
 
+
+
 def icon_register(fileName):
 	name = fileName.split('.')[0]  # Don't include file extension
 	icons_location = os.path.join(os.path.dirname(__file__), "icons_bip")
@@ -58,8 +60,15 @@ def generate_bake_mode_previews():
 	image_location = os.path.join(os.path.dirname(__file__), "resources/bake_modes_bip")	
 	enum_items = []
 	
-	# Generate the thumbnails
-	for i, image in enumerate(os.listdir(image_location)):
+	# Generate the thumbnails, sorted
+	bipfiles = sorted(os.listdir(image_location))
+
+	#put here whatever textures you want to show up first, reversed
+	for mainmode in ['roughness.bip','normal_tangent.bip','metallic.bip','emission.bip','base_color.bip','ao.bip','alpha.bip'] :
+		bipfiles.insert(0, bipfiles.pop(bipfiles.index(mainmode)))
+
+
+	for i, image in enumerate(bipfiles):
 		mode = image[0:-4]
 		if mode in op_bake.modes:
 			filepath = os.path.join(image_location, image)
@@ -104,7 +113,7 @@ def get_padding():
 
 
 def get_bake_mode():
-	return str(bpy.context.scene.TT_bake_mode).replace('.bip', '').lower()
+	return str(bpy.context.window_manager.TT_bake_mode).replace('.bip', '').lower()
 
 
 def set_bake_color_space_int(bake_mode):
@@ -147,7 +156,7 @@ def register():
 
 	# This is an EnumProperty for storing all images
 	# You really can save it anywhere in bpy.types.*  Just make sure the location makes sense
-	bpy.types.Scene.TT_bake_mode = bpy.props.EnumProperty(
+	bpy.types.WindowManager.TT_bake_mode = bpy.props.EnumProperty(
 		items=generate_bake_mode_previews(),
 		update=on_bakemode_set,
 		default='normal_tangent.bip'
