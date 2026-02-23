@@ -3,10 +3,10 @@ import os
 import time
 import mathutils
 import bpy_types
-from bpy_types import bpy_types
-from bpy.types import bpy_prop_collection
 
-from bpy_types import bpy_types
+from bpy.types import bpy_prop_array
+
+
 from . import utilities_ui
 from . import utilities_uv
 from . import settings
@@ -1054,10 +1054,10 @@ def relink_nodes(mode, node_tree,bsdf_node):
 	
 			n_is_float = type(node_n.default_value) == float
 			b_is_float = type(node_b.default_value) == float
-			n_is_color = type(node_n.default_value) == bpy_types.bpy_prop_array and len(list(node_n.default_value)) == 4
-			b_is_color = type(node_b.default_value) == bpy_types.bpy_prop_array and len(list(node_b.default_value)) == 4
-			n_is_vector = type(node_n.default_value) == bpy_types.bpy_prop_array and len(list(node_n.default_value)) == 3
-			b_is_vector = type(node_b.default_value) == bpy_types.bpy_prop_array and len(list(node_b.default_value)) == 3
+			n_is_color = type(node_n.default_value) == bpy_prop_array and len(list(node_n.default_value)) == 4
+			b_is_color = type(node_b.default_value) == bpy_prop_array and len(list(node_b.default_value)) == 4
+			n_is_vector = type(node_n.default_value) == bpy_prop_array and len(list(node_n.default_value)) == 3
+			b_is_vector = type(node_b.default_value) == bpy_prop_array and len(list(node_b.default_value)) == 3
 
 			#basic conversions
 			if b_is_color and n_is_float:
