@@ -1054,10 +1054,13 @@ def relink_nodes(mode, node_tree,bsdf_node):
 	
 			n_is_float = type(node_n.default_value) == float
 			b_is_float = type(node_b.default_value) == float
+
 			n_is_color = type(node_n.default_value) == bpy_prop_array and len(list(node_n.default_value)) == 4
 			b_is_color = type(node_b.default_value) == bpy_prop_array and len(list(node_b.default_value)) == 4
 			n_is_vector = type(node_n.default_value) == bpy_prop_array and len(list(node_n.default_value)) == 3
 			b_is_vector = type(node_b.default_value) == bpy_prop_array and len(list(node_b.default_value)) == 3
+
+
 
 			#basic conversions
 			if b_is_color and n_is_float:
